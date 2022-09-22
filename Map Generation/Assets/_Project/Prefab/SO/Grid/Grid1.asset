@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a3855a09733b54689336d43adade39, type: 3}
+  m_Name: Grid1
+  m_EditorClassIdentifier: 
+  normalPrefab: {fileID: 2337718529917757639, guid: 1544b7982517a9e4bbc81f1afdbce285, type: 3}
+  tileSize: 5
+  MaxCount: {x: 12, y: 7}
+  roadSetting: {fileID: 11400000, guid: 4c44442c18138384cbf7e7c72b76e424, type: 2}
+  itemSetting:
+  - {fileID: 11400000, guid: a1a9904113340924d9ca1ad3caaf6ba6, type: 2}
