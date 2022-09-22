@@ -8,6 +8,7 @@ namespace MapGeneration
     public class ItemSetting : ScriptableObject
     {
         public OnTileItem itemPrefab;
+        public TileType spawnTile;
         public int maxCount;
     }
 }

@@ -8,6 +8,6 @@ namespace MapGeneration
     public class RoadSetting : ScriptableObject
     {
         public RoadTile roadPrefab;
-        public Vector2Int[] Cordiinates;
+        public List<Vector2Int> Cordinates;
     }
 }

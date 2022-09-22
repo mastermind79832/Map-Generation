@@ -14,6 +14,7 @@ namespace MapGeneration
 		private Vector3 m_SpawnTilePos;
 
 		private int m_NormalEmptyTileCount;
+		private List<Vector2Int> roadTiles;
 
 		public void CreateGrid()
 		{
@@ -35,6 +36,7 @@ namespace MapGeneration
 				}
 			}
 			m_NormalEmptyTileCount = 0;
+			roadTiles.Clear();
 			m_Tiles = null;
 		}
 		
@@ -55,23 +57,24 @@ namespace MapGeneration
 			}
 
 			RoadTile prefab = m_CurrentSetting.roadSetting.roadPrefab;
-			Vector2Int[] cordinates = m_CurrentSetting.roadSetting.Cordiinates;
-			for (int i = 0; i < cordinates.Length; i++)
+			roadTiles = m_CurrentSetting.roadSetting.Cordinates;
+			for (int i = 0; i < roadTiles.Count; i++)
 			{
-				if (CheckInBounds(cordinates[i]))
+				if (CheckInBounds(roadTiles[i]))
 				{
-					Debug.LogError($"Road cordinate: {cordinates[i]} does not match total index");
+					Debug.LogError($"Road cordinate: {roadTiles[i]} does not match total index");
+					roadTiles.Remove(roadTiles[i]);
 					continue;
 				}
 
-				if (m_Tiles[cordinates[i].x, cordinates[i].y] != null)
+				if (m_Tiles[roadTiles[i].x, roadTiles[i].y] != null)
 				{
-					Debug.LogWarning($"Duplicate {cordinates[i]} Road cordinate");
+					Debug.LogWarning($"Duplicate {roadTiles[i]} Road cordinate");
+					roadTiles.Remove(roadTiles[i]);
 					continue;
 				}
 
-
-				SpawnTile(prefab, cordinates[i]);
+				SpawnTile(prefab, roadTiles[i]);
 			}
 		}
 
@@ -98,7 +101,6 @@ namespace MapGeneration
 			}
 		}
 
-
 		private void CreateItems()
 		{
 			// Spawn Items Here
@@ -109,6 +111,7 @@ namespace MapGeneration
 			}
 			int itemCount;
 			Vector2Int randomIndex = Vector2Int.zero;
+			OnTileItem newItem;
 			foreach (ItemSetting setting in m_CurrentSetting.itemSetting)
 			{
 				itemCount = setting.maxCount;
@@ -117,28 +120,30 @@ namespace MapGeneration
 
 				while (itemCount > 0)
 				{
-					randomIndex.x = UnityEngine.Random.Range(0, m_CurrentSetting.MaxCount.y);
+					randomIndex.x = UnityEngine.Random.Range(0, m_CurrentSetting.MaxCount.x);
 					randomIndex.y = UnityEngine.Random.Range(0, m_CurrentSetting.MaxCount.y);
 
-					if (CheckTileAvailability(ref randomIndex))
-						continue;
-
-					m_Tiles[randomIndex.x, randomIndex.y].SetOnTileItem(Instantiate(setting.itemPrefab));
-					itemCount--;
+					if (CheckTileAvailability(ref randomIndex, setting.spawnTile))
+					{
+						newItem = Instantiate(setting.itemPrefab);
+						m_Tiles[randomIndex.x, randomIndex.y].SetOnTileItem(newItem);
+						itemCount--;
+					}
 				}
 			}
 		}
 
-		private bool CheckTileAvailability(ref Vector2Int randomIndex)
+		private bool CheckTileAvailability(ref Vector2Int randomIndex, TileType spawnTile)
 		{
-			return m_Tiles[randomIndex.x, randomIndex.y].GetType() != TileType.Normal ||
-				m_Tiles[randomIndex.x, randomIndex.y].IsItemOccupied();
+			return m_Tiles[randomIndex.x, randomIndex.y].GetType() == spawnTile &&
+				!m_Tiles[randomIndex.x, randomIndex.y].IsItemOccupied();
 		}
 
 		private void SpawnTile(Tile prefab, Vector2Int index)
 		{
 			m_SpawnTilePos = Vector3.zero;
 			m_Tiles[index.x, index.y] = Instantiate(prefab);
+			m_Tiles[index.x, index.y].Initialize();
 			m_Tiles[index.x, index.y].transform.parent = transform;
 			m_SpawnTilePos.x = index.x;
 			m_SpawnTilePos.z = index.y;

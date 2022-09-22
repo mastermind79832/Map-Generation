@@ -6,7 +6,7 @@ namespace MapGeneration
 {
 	public class NormalTiles : Tile
 	{
-		protected override void Initialize()
+		public override void Initialize()
 		{
 			SetType(TileType.Normal);
 		}
