@@ -6,6 +6,9 @@ namespace MapGeneration
 {
 	public class RoadTile : Tile
 	{
-
+		protected override void Initialize()
+		{
+			SetType(TileType.Road);
+		}
 	}
 }

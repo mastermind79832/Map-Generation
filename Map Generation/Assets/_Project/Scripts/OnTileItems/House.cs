@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MapGeneration
 {
-	public class House : OnTileItems
+	public class House : OnTileItem
 	{
 
 	}

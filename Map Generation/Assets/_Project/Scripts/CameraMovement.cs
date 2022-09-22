@@ -25,7 +25,6 @@ namespace MapGeneration
 			m_Input.x = Input.GetAxis("Horizontal");
 			m_Input.z = Input.GetAxis("Vertical");
 		}
-
 		
 		private void MoveCamera()
 		{

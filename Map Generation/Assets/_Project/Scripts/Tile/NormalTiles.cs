@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace MapGeneration
 {
-    public class NormalTiles : Tile
-    {
-
-    }
+	public class NormalTiles : Tile
+	{
+		protected override void Initialize()
+		{
+			SetType(TileType.Normal);
+		}
+	}
 }

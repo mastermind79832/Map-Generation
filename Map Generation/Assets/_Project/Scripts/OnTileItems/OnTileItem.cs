@@ -4,7 +4,13 @@ using UnityEngine;
 
 namespace MapGeneration
 {
-	public abstract class OnTileItems : MonoBehaviour
+	public enum ItemType
+	{
+		House	= 0,
+		Forest	= 1
+	}
+
+	public abstract class OnTileItem : MonoBehaviour
 	{
 
 	}
