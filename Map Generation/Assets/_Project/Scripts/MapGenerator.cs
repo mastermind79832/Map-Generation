@@ -14,7 +14,6 @@ namespace MapGeneration
 		private Vector3 m_SpawnTilePos;
 
 		private int m_NormalEmptyTileCount;
-		private List<Vector2Int> roadTiles;
 
 		public void CreateGrid()
 		{
@@ -36,7 +35,6 @@ namespace MapGeneration
 				}
 			}
 			m_NormalEmptyTileCount = 0;
-			roadTiles.Clear();
 			m_Tiles = null;
 		}
 		
@@ -57,24 +55,22 @@ namespace MapGeneration
 			}
 
 			RoadTile prefab = m_CurrentSetting.roadSetting.roadPrefab;
-			roadTiles = m_CurrentSetting.roadSetting.Cordinates;
-			for (int i = 0; i < roadTiles.Count; i++)
+			Vector2Int[] cordinates = m_CurrentSetting.roadSetting.Cordinates;
+			for (int i = 0; i < cordinates.Length; i++)
 			{
-				if (CheckInBounds(roadTiles[i]))
+				if (CheckInBounds(cordinates[i]))
 				{
-					Debug.LogError($"Road cordinate: {roadTiles[i]} does not match total index");
-					roadTiles.Remove(roadTiles[i]);
+					Debug.LogError($"Road cordinate: {cordinates[i]} does not match total index");
 					continue;
 				}
 
-				if (m_Tiles[roadTiles[i].x, roadTiles[i].y] != null)
+				if (m_Tiles[cordinates[i].x, cordinates[i].y] != null)
 				{
-					Debug.LogWarning($"Duplicate {roadTiles[i]} Road cordinate");
-					roadTiles.Remove(roadTiles[i]);
+					Debug.LogWarning($"Duplicate {cordinates[i]} Road cordinate");;
 					continue;
 				}
 
-				SpawnTile(prefab, roadTiles[i]);
+				SpawnTile(prefab, cordinates[i]);
 			}
 		}
 
@@ -104,39 +100,87 @@ namespace MapGeneration
 		private void CreateItems()
 		{
 			// Spawn Items Here
-			if (m_CurrentSetting.itemSetting == null)
+			if (m_CurrentSetting.itemSetting == null || m_CurrentSetting.roadSetting == null || m_CurrentSetting.roadSetting.Cordinates.Length <= 0)
 			{
 				Debug.LogError("Item Setting not Set");
 				return;
 			}
+
 			int itemCount;
 			Vector2Int randomIndex = Vector2Int.zero;
 			OnTileItem newItem;
+			int loopCount;
+
 			foreach (ItemSetting setting in m_CurrentSetting.itemSetting)
 			{
 				itemCount = setting.maxCount;
 				if (itemCount > m_NormalEmptyTileCount)
 					continue;
-
+				loopCount = 0;
 				while (itemCount > 0)
 				{
-					randomIndex.x = UnityEngine.Random.Range(0, m_CurrentSetting.MaxCount.x);
-					randomIndex.y = UnityEngine.Random.Range(0, m_CurrentSetting.MaxCount.y);
+					randomIndex = m_CurrentSetting.roadSetting.Cordinates[UnityEngine.Random.Range(0, m_CurrentSetting.roadSetting.Cordinates.Length)];
 
-					if (CheckTileAvailability(ref randomIndex, setting.spawnTile))
+					if(GetAdjacentFreeTile(ref randomIndex, setting.spawnTile, out Vector2Int freeIndex, out Vector3 direction))
 					{
 						newItem = Instantiate(setting.itemPrefab);
-						m_Tiles[randomIndex.x, randomIndex.y].SetOnTileItem(newItem);
+						newItem.transform.forward = -direction;
+						m_Tiles[freeIndex.x, freeIndex.y].SetOnTileItem(newItem);
+						m_NormalEmptyTileCount--;
+						itemCount--;
+					}
+					else
+						loopCount++;
+
+					if (loopCount >= 5000)
+					{
+						Debug.LogWarning($"Loop exceeded limit {randomIndex}, {itemCount}");
 						itemCount--;
 					}
 				}
 			}
 		}
 
-		private bool CheckTileAvailability(ref Vector2Int randomIndex, TileType spawnTile)
+		//  for checking vertical and horizontal adjacent tile
+		Vector2Int[] adjacentIndexArray = { new Vector2Int(0, 1), new Vector2Int(0, -1), new Vector2Int(1, 0), new Vector2Int(-1, 0) };
+		private bool GetAdjacentFreeTile(ref Vector2Int index, TileType spawnTile, out Vector2Int freeIndex , out Vector3 direction)
 		{
-			return m_Tiles[randomIndex.x, randomIndex.y].GetType() == spawnTile &&
-				!m_Tiles[randomIndex.x, randomIndex.y].IsItemOccupied();
+			Vector2Int currIndex = index;
+			
+			direction = Vector3.zero;
+			freeIndex = Vector2Int.zero;
+
+			for (int i = 0; i < adjacentIndexArray.Length; i++)
+			{
+				currIndex.x = index.x + adjacentIndexArray[i].x;
+				currIndex.y = index.y + adjacentIndexArray[i].y;
+				if (CheckInBounds(currIndex))
+					continue;
+				if (CheckTileAvailability(ref currIndex, spawnTile))
+				{
+					freeIndex = currIndex;
+					direction.x = adjacentIndexArray[i].x;
+					direction.z = adjacentIndexArray[i].y;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private float GetAngle(Vector2Int direction)
+		{
+			if (direction.x == 0 && direction.y == 1)
+			{
+				return 90f;
+			}
+
+			return 0;
+		}
+
+		private bool CheckTileAvailability(ref Vector2Int index, TileType spawnTile)
+		{
+			return m_Tiles[index.x, index.y].GetType() == spawnTile &&
+				!m_Tiles[index.x, index.y].IsItemOccupied();
 		}
 
 		private void SpawnTile(Tile prefab, Vector2Int index)

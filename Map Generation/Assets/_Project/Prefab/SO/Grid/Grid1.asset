@@ -15,6 +15,6 @@ MonoBehaviour:
   normalPrefab: {fileID: 2337718529917757639, guid: 1544b7982517a9e4bbc81f1afdbce285, type: 3}
   tileSize: 5
   MaxCount: {x: 12, y: 7}
-  roadSetting: {fileID: 11400000, guid: 4c44442c18138384cbf7e7c72b76e424, type: 2}
+  roadSetting: {fileID: 11400000, guid: 4d135babf1c330142bee69fc26d9aef3, type: 2}
   itemSetting:
   - {fileID: 11400000, guid: a1a9904113340924d9ca1ad3caaf6ba6, type: 2}

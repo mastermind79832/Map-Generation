@@ -943,6 +943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GridSetting:
+  - {fileID: 11400000, guid: b04afadab573e6b47a4e9d754c3a9a29, type: 2}
   - {fileID: 11400000, guid: 4b4e3361a518db044aecc932208a69fc, type: 2}
 --- !u!4 &2092796634
 Transform:

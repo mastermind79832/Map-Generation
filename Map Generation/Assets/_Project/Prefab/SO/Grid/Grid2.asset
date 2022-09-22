@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a3855a09733b54689336d43adade39, type: 3}
   m_Name: Grid2
   m_EditorClassIdentifier: 
-  normalPrefab: {fileID: 0}
-  tileSize: 0
-  MaxCount: {x: 0, y: 0}
-  roadSetting: {fileID: 0}
-  itemSetting: []
+  normalPrefab: {fileID: 2337718529917757639, guid: 1544b7982517a9e4bbc81f1afdbce285, type: 3}
+  tileSize: 5
+  MaxCount: {x: 20, y: 12}
+  roadSetting: {fileID: 11400000, guid: 4c44442c18138384cbf7e7c72b76e424, type: 2}
+  itemSetting:
+  - {fileID: 11400000, guid: 28a8bfefd2e23044f98bd9be66a1a2d1, type: 2}
